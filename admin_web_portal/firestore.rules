@@ -1,9 +1,176 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-          
+    
+    // Funções auxiliares para verificação de roles
+    function isAdmin() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isSeller() {
+      return get(/databases/$(database)/documents/sellers/$(request.auth.uid)).data != null;
+    }
+    
+    function isRider() {
+      return get(/databases/$(database)/documents/riders/$(request.auth.uid)).data != null;
+    }
+    
+    function isCustomer() {
+      return get(/databases/$(database)/documents/customers/$(request.auth.uid)).data != null;
+    }
+    
+    function isWaiter() {
+      return get(/databases/$(database)/documents/waiters/$(request.auth.uid)).data != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Coleção de Usuários (Clientes)
+    match /customers/{customerId} {
+      allow read: if isOwner(customerId) || isAdmin() || isSeller();
+      allow create: if isOwner(customerId);
+      allow update: if isOwner(customerId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Coleção de Vendedores (Restaurantes)
+    match /sellers/{sellerId} {
+      allow read: if true;
+      allow create: if isOwner(sellerId) || isAdmin();
+      allow update: if isOwner(sellerId) || isAdmin();
+      allow delete: if isAdmin();
+      
+      match /menus/{menuId} {
+        allow read: if true;
+        allow write: if isOwner(get(/databases/$(database)/documents/sellers/$(sellerId)).data.userId) || isAdmin();
+      }
+      
+      match /items/{itemId} {
+        allow read: if true;
+        allow write: if isOwner(get(/databases/$(database)/documents/sellers/$(sellerId)).data.userId) || isAdmin();
+      }
+    }
+    
+    // Coleção de Entregadores (Motoboys)
+    match /riders/{riderId} {
+      allow read: if isOwner(riderId) || isAdmin() || isSeller();
+      allow create: if isOwner(riderId) || isAdmin();
+      allow update: if isOwner(riderId) || isAdmin();
+      allow delete: if isAdmin();
+      
+      match /location/{locationId} {
+        allow read: if true;
+        allow write: if isOwner(riderId);
+      }
+    }
+    
+    // Coleção de Garçons
+    match /waiters/{waiterId} {
+      allow read: if isOwner(waiterId) || isAdmin() || isSeller();
+      allow create: if isOwner(waiterId) || isAdmin() || isSeller();
+      allow update: if isOwner(waiterId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Coleção de Admins
+    match /admins/{adminId} {
+      allow read: if isOwner(adminId) || isAdmin();
+      allow write: if isAdmin();
+    }
+    
+    // Pedidos
+    match /orders/{orderId} {
+      allow read: if isOwner(resource.data.customerId) || 
+                     isSeller() || 
+                     isRider() || 
+                     isAdmin();
+      allow create: if isCustomer() && request.resource.data.keys().hasAll(['customerId', 'sellerId', 'items', 'totalAmount']);
+      allow update: if isOwner(resource.data.customerId) || 
+                       isSeller() || 
+                       isRider() || 
+                       isAdmin();
+      allow delete: if isAdmin();
+      
+      match /tracking/{trackingId} {
+        allow read: if isOwner(get(/databases/$(database)/documents/orders/$(orderId)).data.customerId) || 
+                       isRider() || 
+                       isAdmin();
+        allow write: if isRider() || isAdmin();
+      }
+    }
+    
+    // Comandas Digitais
+    match /comandas/{comandaId} {
+      allow read: if isWaiter() || isSeller() || isAdmin() || 
+                     isOwner(get(/databases/$(database)/documents/comandas/$(comandaId)).data.customerId);
+      allow create: if isWaiter() || isSeller() || isAdmin();
+      allow update: if isWaiter() || isSeller() || isAdmin();
+      allow delete: if isAdmin();
+      
+      match /items/{itemId} {
+        allow read: if true;
+        allow write: if isWaiter() || isSeller() || isAdmin();
+      }
+    }
+    
+    // Tokens
+    match /tokens/{tokenId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId) || isAdmin();
+      allow update: if isOwner(resource.data.userId) || isAdmin();
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    // Endereços
+    match /addresses/{addressId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isOwner(resource.data.userId) || isAdmin();
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    // Avaliações
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isCustomer();
+      allow update: if isOwner(resource.data.customerId);
+      allow delete: if isOwner(resource.data.customerId) || isAdmin();
+    }
+    
+    // Notificações
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAdmin() || isSeller();
+      allow update: if isOwner(resource.data.userId) || isAdmin();
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    // Rotas de entrega
+    match /delivery_routes/{routeId} {
+      allow read: if isRider() || isSeller() || isAdmin();
+      allow write: if isRider() || isAdmin();
+    }
+    
+    // Configurações
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Pagamentos
+    match /payments/{paymentId} {
+      allow read: if isOwner(resource.data.customerId) || isAdmin();
+      allow create: if isCustomer();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Cupons
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isAdmin() || isSeller();
     }
   }
 }
