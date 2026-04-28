@@ -10,6 +10,7 @@ import 'package:user_app/models/sellers.dart';
 import 'package:user_app/widgets/sellers_design.dart';
 import 'package:user_app/widgets/my_drower.dart';
 import 'package:user_app/widgets/progress_bar.dart';
+import 'package:user_app/lib/main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,24 +61,38 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.red, Colors.redAccent],
-              begin: FractionalOffset(0.0, 0.0),
-              end: FractionalOffset(1.0, 0.0),
-              stops: [0.0, 1.0],
-              tileMode: TileMode.clamp,
+        backgroundColor: AppColors.cardBackground,
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.restaurant_menu,
+              color: AppColors.primary,
+              size: 32,
             ),
-          ),
-        ),
-        title: const Text(
-          "I-Eat",
-          style: TextStyle(fontFamily: "Signatra", fontSize: 40),
+            const SizedBox(width: 8),
+            const Text(
+              "iFood",
+              style: TextStyle(
+                fontFamily: "Signatra",
+                fontSize: 32,
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         automaticallyImplyLeading: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart_outlined, color: AppColors.textPrimary),
+            onPressed: () {},
+          ),
+        ],
       ),
       drawer: MyDrawer(),
       body: CustomScrollView(
@@ -87,47 +102,83 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Home(),
                 Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Featured Restaurants",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                          fontFamily: 'Train',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Discover the best food near you",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                          fontFamily: 'Train',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Container(
-                    height: MediaQuery.of(context).size.height * .3,
+                    height: MediaQuery.of(context).size.height * .28,
                     width: MediaQuery.of(context).size.width,
-                    child: CarouselSlider(
-                      items: items.map((Index) {
-                        return Builder(builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: const EdgeInsets.symmetric(horizontal: 1.0),
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Image.asset(
-                                  Index,
-                                  fit: BoxFit.fill,
-                                )),
-                          );
-                        });
-                      }).toList(),
+                    child: CarouselSlider.builder(
+                      itemCount: items.length,
+                      itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
+                        return Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              items[itemIndex],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
                       options: CarouselOptions(
                         height: 500,
                         aspectRatio: 16 / 9,
-                        viewportFraction: 0.8,
+                        viewportFraction: 0.75,
                         initialPage: 0,
                         enableInfiniteScroll: true,
                         reverse: false,
                         autoPlay: true,
-                        autoPlayInterval: const Duration(seconds: 2),
+                        autoPlayInterval: const Duration(seconds: 3),
                         autoPlayAnimationDuration:
-                            const Duration(milliseconds: 500),
-                        autoPlayCurve: Curves.decelerate,
+                            const Duration(milliseconds: 800),
+                        autoPlayCurve: Curves.fastOutSlowIn,
                         enlargeCenterPage: true,
                         enlargeFactor: 0.3,
                         scrollDirection: Axis.horizontal,
+                        padEnds: false,
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
