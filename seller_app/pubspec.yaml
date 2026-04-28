@@ -1,4 +1,4 @@
-name: seller_app
+name: user_app
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.4 <3.0.0'
+  sdk: '>=3.11.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -36,37 +36,44 @@ dependencies:
   cupertino_icons: ^1.0.2
   
   # Firebase
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.16.0
-  cloud_firestore: ^4.14.0
-  firebase_storage: ^11.6.0
-  firebase_messaging: ^14.7.9
+  firebase_core: ^3.12.0
+  firebase_auth: ^5.5.0
+  cloud_firestore: ^5.6.4
+  firebase_storage: ^12.4.3
+  firebase_messaging: ^15.2.3
   
   # Maps & Location
-  google_maps_flutter: ^2.5.0
-  geolocator: ^10.1.0
-  geocoding: ^2.1.1
-  location: ^5.0.3
+  google_maps_flutter: ^2.10.0
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
+  location: ^7.0.1
+  flutter_polyline_points: ^2.1.0
+  directions: ^3.0.0
   
   # Payment - Mercado Pago
-  mercadopago_sdk: ^2.1.0
-  http: ^1.1.0
+  mercadopago_sdk: ^2.3.0
+  http: ^1.3.0
   
   # UI & Widgets
+  carousel_slider: ^5.0.0
   flutter_staggered_grid_view: ^0.7.0
-  fluttertoast: ^8.2.4
-  provider: ^6.1.1
-  intl: ^0.18.1
+  fluttertoast: ^8.2.10
+  number_inc_dec: ^0.9.0
+  provider: ^6.1.2
+  intl: ^0.20.2
   shimmer: ^3.0.0
-  cached_network_image: ^3.3.1
-  qr_flutter: ^4.1.0
+  cached_network_image: ^3.4.1
   
   # Utils
-  image_picker: ^1.0.5
-  shared_preferences: ^2.2.2
-  url_launcher: ^6.2.2
-  uuid: ^4.2.2
-  permission_handler: ^11.1.0
+  image_picker: ^1.1.2
+  shared_preferences: ^2.5.2
+  url_launcher: ^6.3.1
+  timezone: ^0.10.0
+  uuid: ^4.5.1
+  qr_flutter: ^4.1.0
+  local_auth: ^2.3.0
+  permission_handler: ^11.4.0
+ 
 
 dev_dependencies:
   flutter_test:
@@ -78,23 +85,24 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-  uses-material-design: true
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-  
+  uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/
-  
-  
+     - assets/images/
+     - assets/images/slider/
+     
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -108,20 +116,19 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Bebas
-      fonts:
-        - asset: assets/fonts/BebasNeue-Regular.ttf
-    - family: Lobster
-      fonts:
-        - asset: assets/fonts/Lobster-Regular.ttf
-    - family: Signatra
-      fonts:
+     - family: Acme
+       fonts:
+        - asset: assets/fonts/Acme-Regular.ttf
+     - family: Kiwi
+       fonts:
+        - asset: assets/fonts/KiwiMaru-Medium.ttf
+     - family: Signatra
+       fonts:
         - asset: assets/fonts/Signatra.ttf
-    - family: VarelaRound
-      fonts:
-        - asset: assets/fonts/VarelaRound-Regular.ttf
+     - family: Train
+       fonts:
+        - asset: assets/fonts/TrainOne-Regular.ttf
          
-  #         style: italic
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
